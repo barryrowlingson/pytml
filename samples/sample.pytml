@@ -1,0 +1,110 @@
+<html>
+<head>
+<link rel="stylesheet" href="sample.css" type="text/css" />
+</head>
+<body>
+<h1>Sample</h1>
+<p>Here is a simple chunk</p>
+<pre>
+<code id="sum" class="language-python">x = 1
+y = 2
+x + y
+</code>
+</pre>
+
+<p>There's a chunk here that imports the math module
+but you can't see it because it has the "hide" class
+</p>
+<code class="language-python hide">
+import math
+</code>
+
+<p>Now we've imported math, invisibly, we can
+get pi.
+</p>
+
+<p>
+PI is <code class="language-python expression">math.pi</code>
+</p>
+
+<h1>Plot</h1>
+<p>
+You can use matplotlib to create images in python. The
+code chunk has to have an id, and the images are 
+saved using that name as a template
+</p>
+<pre>
+<code id="simpleplot"  class="language-python">
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+x = np.arange(0, 10, 0.2)
+y = np.sin(x)
+plt.plot(x, y)
+plt.show()
+plt.close()
+</code>
+</pre>
+
+<p>Note you don't have to save the figure explicity.
+</p>
+
+<h1>Producing</h1>
+<p>Here's the graph</p>
+<img src="simpleplot-0.png"  />
+
+<h1>Cosine</h1>
+<p>The data-outdir attribute can send the image somewhere else.</p>
+<pre>
+<code id="cosplot"  data-outdir="images" class="language-python">
+y = np.cos(x)
+plt.plot(x,y)
+plt.show()
+plt.close()
+</code>
+</pre>
+
+<p>This image is now in a subdirectory</p>
+
+<img title="this is in a subdir" src="images/cosplot-0.png"  />
+
+<h1>Another</h1>
+<p>
+this is a just a filler. No code here.
+</p>
+
+<h1>Error</h1>
+<p>If errors occur, we carry on regardless and 
+show the error, just as if the bad code was 
+typed in.</p>
+<pre>
+<code id="fail" class="language-python">
+x = [1, 2, 3]
+y = x + 3
+</code>
+</pre>
+
+<p>And now back to something that works</p>
+
+<pre>
+<code id="fixed" class="language-python">y = [z+3 for z in x]
+y
+</code>
+</pre>
+
+<h1>Long lines</h1>
+<p>This is for testing if your CSS breaks PRE blocks nicely</p>
+<pre>
+<code  class="language-python">dir("x")
+</code>
+</pre>
+
+<p>Next up, an expression in a header
+
+<h1>Count to <code class="language-python expression">x</code></h1>
+<p>
+And that's about it.
+</p>
+
+</body>
+</html>

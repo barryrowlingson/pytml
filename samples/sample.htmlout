@@ -1,0 +1,90 @@
+<html>
+ <head>
+  <link href="sample.css" rel="stylesheet" type="text/css"/>
+ </head>
+ <body>
+  <h1>
+   Sample
+  </h1>
+  <pre>
+<code class="language-python" id="sum">&gt;&gt;&gt;  x = 1
+&gt;&gt;&gt;  y = 2
+&gt;&gt;&gt;  x + y
+3</code>
+</pre>
+  <p>
+   PI is
+   <code class="language-python expression">
+    3.14159265359
+   </code>
+  </p>
+  <h1>
+   Plot
+  </h1>
+  <pre>
+<code class="language-python" id="simpleplot">&gt;&gt;&gt;  import matplotlib
+&gt;&gt;&gt;  import matplotlib.pyplot as plt
+&gt;&gt;&gt;  import numpy as np
+&gt;&gt;&gt;  x = np.arange(0, 10, 0.2)
+&gt;&gt;&gt;  y = np.sin(x)
+&gt;&gt;&gt;  plt.plot(x, y)
+[&lt;matplotlib.lines.Line2D object at 0x95e1a0c&gt;]
+&gt;&gt;&gt;  plt.show()
+&gt;&gt;&gt;  plt.close()</code>
+</pre>
+  <h1>
+   Producing
+  </h1>
+  <img src="simpleplot-0.png"/>
+  <h1>
+   Cosine
+  </h1>
+  <pre>
+<code class="language-python" data-outdir="images" id="cosplot">&gt;&gt;&gt;  y = np.cos(x)
+&gt;&gt;&gt;  plt.plot(x,y)
+[&lt;matplotlib.lines.Line2D object at 0x96bb34c&gt;]
+&gt;&gt;&gt;  plt.show()
+&gt;&gt;&gt;  plt.close()</code>
+</pre>
+  <img src="images/cosplot-0.png" title="this is in a subdir"/>
+  <h1>
+   Another
+  </h1>
+  <p>
+   this is a test
+  </p>
+  <h1>
+   Error
+  </h1>
+  <pre>
+<code class="language-python" id="fail">&gt;&gt;&gt;  
+&gt;&gt;&gt;  x = [1, 2, 3]
+&gt;&gt;&gt;  y = x + 3
+Traceback (most recent call last):
+  File "&lt;console&gt;", line 1, in &lt;module&gt;
+TypeError: can only concatenate list (not "int") to list</code>
+</pre>
+  <pre>
+<code class="language-python" id="fixed">&gt;&gt;&gt;  y = [z+3 for z in x]
+&gt;&gt;&gt;  y
+[4, 5, 6]</code>
+</pre>
+  <h1>
+   Long lines
+  </h1>
+  <pre>
+<code class="language-python">&gt;&gt;&gt;  dir("x")
+['__add__', '__class__', '__contains__', '__delattr__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getitem__', '__getnewargs__', '__getslice__', '__gt__', '__hash__', '__init__', '__le__', '__len__', '__lt__', '__mod__', '__mul__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__rmod__', '__rmul__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '_formatter_field_name_split', '_formatter_parser', 'capitalize', 'center', 'count', 'decode', 'encode', 'endswith', 'expandtabs', 'find', 'format', 'index', 'isalnum', 'isalpha', 'isdigit', 'islower', 'isspace', 'istitle', 'isupper', 'join', 'ljust', 'lower', 'lstrip', 'partition', 'replace', 'rfind', 'rindex', 'rjust', 'rpartition', 'rsplit', 'rstrip', 'split', 'splitlines', 'startswith', 'strip', 'swapcase', 'title', 'translate', 'upper', 'zfill']</code>
+</pre>
+  <h1>
+   Count to
+   <code class="language-python expression">
+    [1, 2, 3]
+   </code>
+  </h1>
+  <p>
+   123
+  </p>
+ </body>
+</html>
+
