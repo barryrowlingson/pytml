@@ -155,6 +155,11 @@ def makeparser():
                         help="figure height (inches)",
                         type=int,
                         default=3)
+    parser.add_argument('--output', nargs='?',
+                        type=argparse.FileType('w'),
+                        default=sys.stdout,
+                        help="output file")
+                        
     return parser
 
 
@@ -172,9 +177,8 @@ def main():
     codes = Codes(infile, lang)
     codes.runCodes()
     codes.replaceCodes()
-    print codes.soup.prettify()
+    args.output.write(codes.soup.prettify())
 
-    
 if __name__=="__main__":
     main()
 
