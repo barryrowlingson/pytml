@@ -9,6 +9,7 @@ import StringIO
 import sys
 import code
 import os.path
+import pytmlargs
 
 from bs4 import BeautifulSoup
 
@@ -18,6 +19,39 @@ matplotlib.use("module://pytml.backend_autosave")
 import backend_autosave as backend
 
 import matplotlib.pyplot as plt
+
+import os
+import os.path
+
+class Cache(object):
+    """
+    each cache entry stores:
+      pre-execution context (pec)
+      the code text
+      the code output
+
+    cache checking 
+      if the code is different from the cached code, cache content is invalid
+      if the pec is different from current context, cache content is invalid
+
+    """
+
+    def __init__(self, path):
+        self.path = path
+        if not os.path.exists(path):
+            os.makedirs(path)
+    def create_cache_entry(self, code, output):
+        id = code.attrs['id']
+        entry_dir = os.path.join(self.path, id)
+        if not os.path.exists(entry_dir):
+            os.makedirs(entry_dir)
+        pass
+    def is_cache_valid(self, code):
+        pass
+    def update_cache_entry(self, code):
+        entry_dir = os.path.join(self.path, id)
+        
+        pass
 
 def resetplot(code):
     """ called before a chunk is run """
@@ -97,15 +131,18 @@ def show(input):
     global context
     code.interact(readfunc=readline, local=context, banner="")
 
+def code_not_asis(tag):
+    return tag.name=="code" and "language-python" in tag['class'] and "asis" not in tag['class']
 
 class Codes():
-    def __init__(self, filename, language):
+    def __init__(self, filename, language, cachedir):
         self.lang = language
         self.soup = parseFile(filename)
-        self.codes = self.soup.find_all("code", "language-%s" % self.lang)
+        self.codes = self.soup.find_all(code_not_asis)
         self.chunkTexts = []
         self.env = {}
         self.text = StringIO.StringIO()
+        self.cache = Cache(cachedir)
         return None
         
     def getCodes(self):
@@ -138,7 +175,6 @@ import argparse
 
 def makeparser():
     parser = argparse.ArgumentParser() 
-    parser.add_argument("input_file", help="file to process")
     parser.add_argument("--imgdir",
                         help="image directory",
                         type=str,
@@ -155,10 +191,15 @@ def makeparser():
                         help="figure height (inches)",
                         type=int,
                         default=3)
+    parser.add_argument("--cachedir",
+                        help="cache directory",
+                        action=pytmlargs.writable_dir,
+                        default="./cache/")
     parser.add_argument('--output', nargs='?',
                         type=argparse.FileType('w'),
                         default=sys.stdout,
                         help="output file")
+    parser.add_argument("input_file", help="file to process")
                         
     return parser
 
@@ -168,13 +209,17 @@ def main():
     parser = makeparser()
     args = parser.parse_args()
 
+    (dd,msgs) = pytmlargs.try_make_wdir(args.cachedir)
+    if not dd:
+        raise ValueError(msg)
+
     backend.setdpi = args.dpi
     backend.setfigsize = [args.width, args.height]
     backend.outdir = args.imgdir
 
     lang = "python"
-    infile = sys.argv[1]
-    codes = Codes(infile, lang)
+    infile = args.input_file
+    codes = Codes(infile, lang, args.cachedir)
     codes.runCodes()
     codes.replaceCodes()
     args.output.write(codes.soup.prettify())
