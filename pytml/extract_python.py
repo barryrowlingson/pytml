@@ -159,7 +159,7 @@ def code_not_asis(tag):
     return tag.name=="code" and "language-python" in tag['class'] and "asis" not in tag['class']
 
 class Codes():
-    def __init__(self, filename, language, cachedir):
+    def __init__(self, filename, language, cache):
         self.lang = language
         self.soup = parseFile(filename)
         self.codes = self.soup.find_all(code_not_asis)
@@ -173,7 +173,7 @@ class Codes():
         self.chunkTexts = []
         self.env = {}
         self.text = StringIO.StringIO()
-        self.cache = Cache(cachedir)
+        self.cache = cache
         return None
         
 #    def getCodes(self):
@@ -230,6 +230,11 @@ def makeparser():
                         help="figure height (inches)",
                         type=int,
                         default=3)
+    parser.add_argument("--disable-cache",
+                        help="dont get outputs from cache",
+                        default=False,
+                        action='store_true'
+                        )
     parser.add_argument("--cachedir",
                         help="cache directory",
                         action=pytmlargs.writable_dir,
@@ -258,7 +263,10 @@ def main():
 
     lang = "python"
     infile = args.input_file
-    codes = Codes(infile, lang, args.cachedir)
+
+    cache = Cache(args.cachedir, not args.disable_cache)
+
+    codes = Codes(infile, lang, cache)
     codes.runCodes()
     codes.replaceCodes()
     args.output.write(codes.soup.prettify())
