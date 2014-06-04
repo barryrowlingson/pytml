@@ -10,6 +10,8 @@ import sys
 import code
 import os.path
 import pytmlargs
+import hashlib
+
 
 from bs4 import BeautifulSoup
 
@@ -36,21 +38,43 @@ class Cache(object):
 
     """
 
-    def __init__(self, path):
+    def __init__(self, path, on=True):
         self.path = path
+        self.on = on
         if not os.path.exists(path):
             os.makedirs(path)
-    def create_cache_entry(self, code, output):
-        id = code.attrs['id']
+    def get_cache(self, id, chunk):
+        if not self.on:
+            return (None, False)
+        if not os.path.exists(os.path.join(self.path, id)):
+            return (None, False)
+        hexd = hashlib.md5()
+        hexd.update(chunk)
+        hexd = hexd.hexdigest()
+        if os.path.exists(os.path.join(self.path, "input-%s" % hexd)):
+            output = open(os.path.join(self.path,"output-%s" % hexd)).read()
+            return (output, True)
+        else:
+            return ("fnord", True)
+    def create_cache_dir(self, id):
         entry_dir = os.path.join(self.path, id)
         if not os.path.exists(entry_dir):
             os.makedirs(entry_dir)
         pass
-    def is_cache_valid(self, code):
+    def is_cache_valid(self, id):
         pass
-    def update_cache_entry(self, code):
+    def update_cache_entry(self, id, input, output):
+        self.create_cache_dir(id)
         entry_dir = os.path.join(self.path, id)
-        
+        hexd = hashlib.md5()
+        hexd.update(input)
+        hexd = hexd.hexdigest()
+        input_file = os.path.join(entry_dir,"input-%s" % hexd)
+        output_file = os.path.join(entry_dir,"output-%s" % hexd)
+        with open(input_file,"w") as inputs:
+            inputs.write(input)
+        with open(output_file,"w") as outputs:
+            outputs.write(output)
         pass
 
 def resetplot(code):
@@ -139,33 +163,48 @@ class Codes():
         self.lang = language
         self.soup = parseFile(filename)
         self.codes = self.soup.find_all(code_not_asis)
+        ids = {}
+        for code in self.codes:
+            if not code.has_attr("id"):
+                raise ValueError,"code section %s... has no id attribute" % str(code)[:40]
+            if ids.has_key(code['id']):
+                raise ValueError,"non-unique ids: %s " % code['id']
+            ids[code['id']]=1
         self.chunkTexts = []
         self.env = {}
         self.text = StringIO.StringIO()
         self.cache = Cache(cachedir)
         return None
         
-    def getCodes(self):
-        for code in self.codes:
-            self.chunkTexts.append(code.text)
-        return None
+#    def getCodes(self):
+#        for code in self.codes:
+#            self.chunkTexts.append(code.text)
+#        return None
 
     def runCodes(self):
         self.chunkouts = []
         for code in self.codes:
+            id = code['id']
             chunk = code.text
-            if "expression" in code['class']:
-                output = expression(code)
+            (output, cached) = self.cache.get_cache(id, chunk)
+            if not cached:
+                if "expression" in code['class']:
+                    output = expression(code)
+                else:
+                    output = block(code)
             else:
-                output = block(code)
+                code['class'].append("cached")
             self.chunkouts.append(output)
-        
+            self.cache.update_cache_entry(id, chunk, output)
+
     def replaceCodes(self):
+        """ replace codes with output in the soup """
         for i in range(len(self.codes)):
             code = self.codes[i]
             if "hide" in code["class"]:
-                code.decompose()
+                code.decompose() # deletes the code tag from the soup
             else:
+                # replace the contents with a stripped output
                 t = self.chunkouts[i]
                 t = t.strip()
                 code.string = t
