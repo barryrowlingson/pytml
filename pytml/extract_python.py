@@ -51,11 +51,11 @@ class Cache(object):
         hexd = hashlib.md5()
         hexd.update(chunk)
         hexd = hexd.hexdigest()
-        if os.path.exists(os.path.join(self.path, "input-%s" % hexd)):
-            output = open(os.path.join(self.path,"output-%s" % hexd)).read()
+        if os.path.exists(os.path.join(self.path, id, "input-%s" % hexd)):
+            output = open(os.path.join(self.path, id, "output-%s" % hexd)).read()
             return (output, True)
         else:
-            return ("fnord", True)
+            return (None, False)
     def create_cache_dir(self, id):
         entry_dir = os.path.join(self.path, id)
         if not os.path.exists(entry_dir):
@@ -156,6 +156,8 @@ def show(input):
     code.interact(readfunc=readline, local=context, banner="")
 
 def code_not_asis(tag):
+    if not tag.has_attr("class"):
+        return False
     return tag.name=="code" and "language-python" in tag['class'] and "asis" not in tag['class']
 
 class Codes():
